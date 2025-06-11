@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="p-6">
+  <h1 class="text-3xl font-bold mb-6">{{ course.title }}</h1>
+
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <aside class="lg:col-span-1 space-y-4">
+      {% for section in sections %}
+        <div 
+          x-data="{ open: {{ section.id|add:'0' }} === {{ open_section_id|add:'0' }} }" 
+          class="border rounded shadow-sm"
+        >
+          <button @click="open = !open"
+                  class="w-full text-left p-4 bg-gray-100 font-semibold flex justify-between items-center">
+            <span>{{ section.order|add:"1" }}. {{ section.title }}</span>
+            <span>
+              <template x-if="open">
+                <svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M17 14L12 9L7 14" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </template>
+              <template x-if="!open">
+                <svg width="24" height="24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M7 10L12 15L17 10" stroke="#333" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </template>
+            </span>
+          </button>
+          <div x-show="open" class="p-4 space-y-2 border-t">
+            {% for les in section.lessons.all %}
+              <a href="{% url 'courses:lesson_detail' course.pk les.pk %}"
+                 class="block px-2 py-1 rounded hover:bg-blue-100 {% if lesson and les.pk == lesson.pk %}bg-blue-100 font-semibold{% endif %}">
+                {{ les.order|add:"1" }}. {{ les.title }}
+              </a>
+            {% empty %}
+              <p class="text-gray-500 text-sm">No lessons yet.</p>
+            {% endfor %}
+          </div>
+        </div>
+      {% endfor %}
+    </aside>
+    <main class="lg:col-span-2">
+      {% if lesson %}
+        <h2 class="text-xl font-bold mb-4">{{ lesson.title }}</h2>
+
+        {% if signed_url %}
+          {% with lesson.file_path|lower as path %}
+            {% if path|slice:"-4:" == ".mp4" %}
+              <video class="w-full rounded-lg border bg-black" controls>
+                <source src="{{ signed_url }}" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+            {% elif path|slice:"-4:" == ".pdf" %}
+              <iframe src="{{ signed_url }}" width="100%" height="600px" class="rounded-lg border shadow"></iframe>
+            {% else %}
+              <p class="text-yellow-600 mt-4">Unsupported file type.</p>
+            {% endif %}
+          {% endwith %}
+        {% else %}
+          <p class="text-red-500 mt-4">No file available for this lesson.</p>
+        {% endif %}
+      {% else %}
+        <p class="text-gray-500">Select a lesson to begin.</p>
+      {% endif %}
+    </main>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+{% endblock %}
