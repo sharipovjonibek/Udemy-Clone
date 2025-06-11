@@ -1,0 +1,65 @@
+{# templates/courses/course_detail.html #}
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="flex h-[80vh] bg-white rounded-lg shadow overflow-hidden">
+  <!-- Sidebar: Sections & Lessons -->
+  <aside class="w-1/4 border-r overflow-y-auto p-4">
+    <h2 class="font-bold text-lg mb-4">{{ course.title }}</h2>
+
+    {% if sections %}
+      {% for section in sections %}
+        <div class="mb-6">
+          <!-- Section title -->
+          <p class="font-semibold">
+            {{ section.order|add:"1" }}. {{ section.title }}
+          </p>
+          <!-- Lessons list -->
+          <ul class="ml-4 mt-2 space-y-1">
+            {% for les in section.lessons.all %}
+              <li>
+                <a
+                  href="{% url 'courses:lesson_detail' course.pk les.pk %}"
+                  class="block py-1 px-2 rounded{% if lesson and les.pk == lesson.pk %} bg-blue-100 font-semibold{% endif %}"
+                >
+                  {{ les.order|add:"1" }}. {{ les.title }}
+                </a>
+              </li>
+            {% empty %}
+              <li class="text-gray-500">No lessons yet.</li>
+            {% endfor %}
+          </ul>
+        </div>
+      {% endfor %}
+    {% else %}
+      <p class="text-gray-500">No sections found.</p>
+    {% endif %}
+  </aside>
+
+  <!-- Main area: Video -->
+  <main class="flex-grow p-6 overflow-y-auto">
+    {% if lesson %}
+      <h3 class="text-2xl font-bold mb-4">{{ lesson.title }}</h3>
+      <div class="aspect-video bg-black mb-4">
+        {% if lesson.youtube_id %}
+          <iframe
+            class="w-full h-full"
+            src="https://www.youtube-nocookie.com/embed/{{ lesson.youtube_id }}{% if lesson.youtube_playlist %}?list={{ lesson.youtube_playlist }}{% endif %}"
+            title="{{ lesson.title }}"
+            frameborder="0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowfullscreen
+          ></iframe>
+        {% else %}
+          <p class="text-red-500">No video URL provided.</p>
+        {% endif %}
+      </div>
+    {% else %}
+      <p class="text-gray-500">Select a lesson to begin.</p>
+    {% endif %}
+  </main>
+</div>
+{% endblock %}
