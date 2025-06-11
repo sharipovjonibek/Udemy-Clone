@@ -24,21 +24,9 @@ This is a Django-based online course platform that allows instructors to create 
 - **Database**: SQLite / PostgreSQL (configurable)
 - **Deployment-ready**: Can be deployed to Heroku, Vercel (for frontend), or DigitalOcean
 
----
 
-## 📁 Project Structure
 
-onlinecourse/
-├── courses/ # Main app for course logic
-│ ├── models.py # Course, Section, Lesson models
-│ ├── views.py # course_list, lesson_detail logic
-│ ├── templates/ # course_detail.html and others
-│ └── admin.py # Django Admin customization
-├── users/ # User registration, login, and verification
-├── media/ # Uploaded images (if any)
-├── static/ # Custom static files
-├── templates/ # Base HTML templates
-└── manage.py
+
 
 
 
